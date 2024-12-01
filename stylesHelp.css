@@ -1,0 +1,32 @@
+body {
+    background-color: #011F3F;
+    align-items: center;
+}
+.heading {
+    text-align: center;
+}
+.listBox {
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    font-family: "JetBrains Mono", serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    color: white;
+    text-align: left; 
+    padding: 10px; 
+}
+
+#level-title {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 3rem;
+    margin:  5%;
+    color: #FEF2BF;
+    padding-top: 0px;
+}
+.back-link {
+    padding: 50px;
+    font-family: 'Press Start 2P', cursive;
+    color: #FEF2BF;
+}
