@@ -1,122 +1,69 @@
+var buttonColours = ["red", "blue", "green", "yellow"];
+
 var sequence = [];
-$(document).on("keypress", function(){
-    start();
+var userClickedPattern = [];
+
+var gameStart = false;
+var level = 0;
+
+$(document).keypress(function () {
+    if(!gameStart) {
+        $("#level-title").text("Level " + level);
+        nextSequence();
+        gameStart = true;
+    }
 })
 
-function start() {
-    sequence = [];
-    randomSquare();
-    turn(0);
+$(".btn").click(function () {
+    var userClicked = $(this).attr("id");
+    userClickedPattern.push(userClicked);
 
-}
-function turn(index) {
-    if (index >= sequence.length) {
-        console.log("done" + sequence);
-        randomSquare();
-        turn(0);  // Start a new turn
-    } else {
-        click(index, function(newIndex) {
-            turn(newIndex);  // Continue the current turn with the next index
-        });
-    }
-}
+    animatePress(userClicked);
 
+    checkAnswer(userClickedPattern.length - 1);
+})
 
-function gameOver() {
-    console.log("gameover");
-    $("h1").text("Game Over");
-    
-
-}
-function click(index, callback) {
-    console.log(index);
-    $("button").one("click", function(event) {  // Use 'one' to ensure the handler is only called once per click
-        console.log(this);
-        console.log(index);
-        var correct = "." + numberToSquare(sequence[index]);
-
-        var curr = "." + this.classList[0];
-        var isCorrect = (curr == correct);
-        $(curr).addClass("clicked");
-        console.log("clicked" + curr + " " +sequence);
-        setTimeout(function() {
-            $(curr).removeClass("clicked");
-        }, 100);
-
-        if (!isCorrect) {
-            console.log(curr);
-            console.log(correct);
-            gameOver();
-        } else {
-            if (index + 1 < sequence.length){
-                index++
-                console.log("continue" + sequence);
-                callback(index);  // Call the callback with the updated index
-            } else {
-                console.log("end" + curr);
-                $(curr).off("click");
-
-                randomSquare();
-                turn(0);
-            }
-            
+function checkAnswer(currentLevel) {
+    if (sequence[currentLevel] === userClickedPattern[currentLevel]) {
+        if(userClickedPattern.length === sequence.length) {
+            setTimeout(function () {
+                nextSequence();
+            }, 1000);
         }
-    });
-}
+    } else {
+        $("body").addClass("game-over");
+        $("#level-title").text("Game Over, Press Any Key to Restart");
 
+        setTimeout(function () {
+            $("body").removeClass("game-over");
+        },200);
 
-function randomSquare() {
-    var randomNumber = Math.floor(Math.random() * 4) + 1;
-    sequence.push(randomNumber);
-    onClick(randomNumber);
-    $("h1").text(sequence);
-    return randomNumber;
-    
-    
-}
-
-function onClick(square) {
-    activeButton = "";
-    switch (square) {
-        case 1:
-            activeButton = ".green";
-            $(activeButton).addClass("clicked");
-            break;
-        case 2:
-            activeButton = ".red";
-            $(activeButton).addClass("clicked");
-            break;
-        case 3:
-            activeButton = ".yellow";
-            $(activeButton).addClass("clicked");
-            break;
-        case 4:
-            activeButton = ".blue";
-            $(activeButton).addClass("clicked");
-            break;
-        default:
-            break;
+        startOver();
     }
-    setTimeout(function() {
-        $(activeButton).removeClass("clicked");
-    },100)
-    return square;
 }
 
-function numberToSquare(number) {
-    switch (number) {
-        case 1:
-            return "green";
-            
-        case 2:
-            return "red";
+function nextSequence() {
+    userClickedPattern = [];
+    level++;
 
-        case 3:
-            return "yellow";
+    $("#level-title").text("Level " + level);
 
-        case 4:
-            return "blue";
-        default:
-            break;
-    }
+    var randomNum = Math.floor(Math.random() * 4);
+    var randomColour = buttonColours[randomNum];
+    sequence.push(randomColour);
+
+    $("#" + randomColour).fadeIn(100).fadeOut(100).fadeIn(100);
+}
+
+function animatePress(currentColour) {
+    $("#" + currentColour).addClass("pressed");
+    setTimeout(function () {
+        $("#" + currentColour).removeClass("pressed");
+    }, 100);
+}
+
+function startOver() {
+    level = 0;
+    sequence = [];
+    gameStart = false;
 }
